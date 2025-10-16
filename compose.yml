@@ -2,21 +2,23 @@ services:
   app:
     build: ./app
     ports: ["8080:8080"]
-    command: >
-      gunicorn -w 2 -k gthread --threads 4
-      --timeout ${GUNI_TIMEOUT:-2} --graceful-timeout ${GUNI_GRTIMEOUT:-2}
-      --bind 0.0.0.0:8080 main:app
+    command:
+      [
+        "gunicorn","-w","2","-k","gthread","--threads","4",
+        "--timeout","${GUNI_TIMEOUT:-2}","--graceful-timeout","${GUNI_GRTIMEOUT:-2}",
+        "--bind","0.0.0.0:8080","main:app"
+      ]
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/healthz || exit 1"]
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://localhost:8080/healthz', timeout=1).status==200 else sys.exit(1)"]
       interval: 10s
       timeout: 2s
       retries: 3
 
   prometheus:
-    image: prom/prometheus:v2.53.0
+    image: prom/prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
-      - --web.enable-lifecycle        # allows remote POST /-/reload
+      - --web.enable-lifecycle
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./prometheus-rules:/etc/prometheus/rules:ro
@@ -26,7 +28,7 @@ services:
       - app
 
   grafana:
-    image: grafana/grafana:10.4.2
+    image: grafana/grafana
     ports:
       - "0.0.0.0:3000:3000/tcp"
     volumes:

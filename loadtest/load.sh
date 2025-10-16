@@ -1,3 +1,3 @@
 #!/bin/bash
 
-while true;do sleep 0.1;curl -I http://localhost:8080/work?latencyMs=200&failRatePct=5;done
+while true; do curl -s 'http://103.167.235.175:8080/work?latencyMs=200&failRatePct=5' >/dev/null; sleep 0.05; done

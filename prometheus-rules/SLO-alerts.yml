@@ -1,0 +1,36 @@
+groups:
+- name: nunchi-slo
+  rules:
+  # Availability: 99.9% SLO (error budget 0.1%). Fast burn page.
+  - alert: AvailabilityBudgetBurnFast
+    expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > (0.1/100) * 14.4
+    for: 2m
+    labels: { severity: page }
+    annotations: { summary: "Fast error-budget burn" }
+
+  # Slower burn (ticket).
+  - alert: AvailabilityBudgetBurnSlow
+    expr: sum(rate(http_requests_total{status=~"5.."}[1h])) / sum(rate(http_requests_total[1h])) > (0.1/100) * 6
+    for: 2h
+    labels: { severity: ticket }
+    annotations: { summary: "Slow error-budget burn" }
+
+  # Latency SLO: 99% <= 300ms (we use p99 as proxy here).
+  - alert: HighLatencyP99
+    expr: histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{path="/work"}[5m]))) > 0.3
+    for: 15m
+    labels: { severity: ticket }
+    annotations: { summary: "p99 latency > 300ms" }
+
+  # Easier demo alerts (can be triggered on demand)
+  - alert: ErrorRateOver2Percent
+    expr: sum(rate(http_requests_total{status=~"5.."}[1m])) / sum(rate(http_requests_total[1m])) > 0.02
+    for: 1m
+    labels: { severity: warning }
+    annotations: { summary: "Error rate > 2% (1m)" }
+
+  - alert: LatencyP99Over500ms
+    expr: histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{path="/work"}[1m]))) > 0.5
+    for: 1m
+    labels: { severity: warning }
+    annotations: { summary: "p99 > 500ms (1m)" }

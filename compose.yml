@@ -1,0 +1,15 @@
+services:
+  app:
+    build: ./app
+    ports:
+      - "0.0.0.0:8080:8080/tcp"
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "0.0.0.0:9090:9090/tcp"
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "0.0.0.0:3000:3000/tcp"

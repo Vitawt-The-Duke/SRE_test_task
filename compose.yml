@@ -22,7 +22,7 @@ services:
       - --web.enable-lifecycle
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./prometheus-rules:/etc/prometheus/rules:ro
+      - ./alerts:/etc/prometheus/rules:ro
     ports:
       - "0.0.0.0:9090:9090/tcp"
     depends_on:

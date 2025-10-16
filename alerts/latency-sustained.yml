@@ -1,0 +1,13 @@
+groups:
+- name: test-latency
+  rules:
+  - alert: HighLatencyP99
+    expr: histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket{path="/work"}[5m]))) > 0.3
+    for: 15m
+    labels: { severity: ticket }
+    annotations:
+      summary: "p99 latency > 300ms (sustained)"
+      description: "99th percentile latency above 300ms for 15 minutes."
+      hint: "Check p50 vs p99 gap, in-flight, CPU/mem; consider timeout+retry/jitter or circuit breaker."
+      dashboard: "http://103.167.235.175:3000/d/test-sli"
+      runbook: "https://github.com/Vitawt-The-Duke/SRE_test_task/blob/main/docs/runbooks/high-p99-latency.md"

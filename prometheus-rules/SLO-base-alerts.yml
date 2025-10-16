@@ -1,5 +1,5 @@
 groups:
-- name: nunchi-slo
+- name: base-slo
   rules:
   # Availability: 99.9% SLO (error budget 0.1%). Fast burn page.
   - alert: AvailabilityBudgetBurnFast

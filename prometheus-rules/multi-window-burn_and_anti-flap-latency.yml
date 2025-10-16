@@ -1,5 +1,5 @@
 groups:
-- name: test-slo
+- name: window-burn_and_AvailabilityBudgetBurnSlow-slo
   rules:
   - alert: AvailabilityBudgetBurnFast
     expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > (0.1/100) * 14.4

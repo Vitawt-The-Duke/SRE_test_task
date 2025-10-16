@@ -1,17 +1,32 @@
 services:
   app:
     build: ./app
-    ports:
-      - "0.0.0.0:8080:8080/tcp"
+    ports: ["8080:8080"]
+    command: >
+      gunicorn -w 2 -k gthread --threads 4
+      --timeout ${GUNI_TIMEOUT:-2} --graceful-timeout ${GUNI_GRTIMEOUT:-2}
+      --bind 0.0.0.0:8080 main:app
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/healthz || exit 1"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:v2.53.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-lifecycle        # allows remote POST /-/reload
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./prometheus-rules:/etc/prometheus/rules:ro
     ports:
       - "0.0.0.0:9090:9090/tcp"
+    depends_on:
+      - app
+
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:10.4.2
     ports:
       - "0.0.0.0:3000:3000/tcp"
     volumes:
@@ -22,3 +37,6 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=SuperPuperStrongPassword667-
       - GF_LOG_LEVEL=debug
+    depends_on:
+      - prometheus
+      - app

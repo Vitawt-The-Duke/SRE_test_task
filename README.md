@@ -94,8 +94,8 @@ curl -X POST http://localhost:9090/-/reload
 ----
 
 ## Runbooks
-- [High burn rate](./docs/runbooks/high-burn-rate.md)
-- [High p99 latency](./docs/runbooks/high-p99-latency.md)
+- [High burn rate](./DOCS/runbooks/high-burn-rate.md)
+- [High p99 latency](./DOCS/runbooks/high-p99-latency.md)
 
 ---
 

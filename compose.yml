@@ -13,3 +13,7 @@ services:
     image: grafana/grafana
     ports:
       - "0.0.0.0:3000:3000/tcp"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=SuperPuperStrongPassword667-
+      - GF_LOG_LEVEL=debug
